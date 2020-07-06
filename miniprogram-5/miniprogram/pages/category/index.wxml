@@ -1,0 +1,45 @@
+<!--pages/category/index.wxml-->
+<view class="cates" hover-class="none" hover-stop-propagation="false">
+    <Search></Search>
+    <view class="cates_container">
+        <scroll-view scroll-top="{{scrollTop}}" scroll-y="{{true}}" class="left_menu">
+            <view 
+            bindtap="handleItemTap"
+            data-index="{{index}}"
+            class="menu_item {{index == currentIndex? 'active':''}}" 
+            wx:for="{{leftMenuList}}"
+            wx:key="*this"
+            >
+            {{item}}
+            </view>
+        </scroll-view>
+        <scroll-view class="right_content" scroll-y="{{true}}">
+            <view 
+            wx:for="{{rightContent}}"
+            wx:for-index="index1"
+            wx:for-item="item1"
+            wx:key="cat_id"
+            class="goods_group" hover-class="none" hover-stop-propagation="false">
+                <view class="goods_title">
+                    <text class="delimiter" selectable="false" space="false" decode="false">/</text>
+                    <text class="" selectable="false" space="false" decode="false">{{item1.cat_name}}</text>
+                    <text class="delimiter" selectable="false" space="false" decode="false">/</text>
+                </view>
+                <view class="goods_list">
+                    <navigator
+                    wx:for="{{item1.children}}"
+                    wx:for-item="item2"
+                    wx:for-index="index2"
+                    wx:key="cat_id"
+                    url="/pages/goods_list/index?cid={{item2.cat_id}}"
+                    >
+                        <image class="" src="{{item2.cat_icon}}" mode="widthFix" lazy-load="false" binderror="" bindload=""></image>
+                        <text class="" selectable="false" space="false" decode="false">
+                            {{item2.cat_name}}
+                        </text>
+                    </navigator>
+                </view>
+            </view>
+        </scroll-view>
+    </view>
+</view>
