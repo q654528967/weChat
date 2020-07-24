@@ -1,5 +1,5 @@
 // pages/cart/index.js
-import { getSetting, openSetting, chooseAddress} from '../../utils/getAddress';
+import { showToast, showModal, getSetting, openSetting, chooseAddress} from '../../utils/asyncWx';
 Page({
 
   /**
@@ -34,6 +34,7 @@ Page({
         await openSetting()
       }
       let data = await chooseAddress()
+      data.all = data.provinceName + data.cityName + data.countyName + data.detailInfo;
       wx.setStorageSync('address', data);
     }catch(err){
       console.log(err)
@@ -50,12 +51,41 @@ Page({
    * 生命周期函数--监听页面显示
    */
   onShow: function () {
-    const address=wx.getStorageSync('address');
+    const address=wx.getStorageSync('address') || {};
     const cart = wx.getStorageSync("cart") || [];
     this.setCart(cart)
     this.setData({address})
   },
-
+  async handlePay(){
+    const {address, totalNum}=this.data;
+    if(!address.userName){
+      await showToast({title:'您还没有选择收获地址'})
+      
+    }else if(totalNum == 0){
+      await showToast({title:'您还没有选购商品'})
+    }else{
+      wx.navigateTo({
+        url: '/pages/pay/index'
+      });
+    }
+  },
+  async handleItemNumEdit(e){
+    const {operation, id} = e.currentTarget.dataset;
+    let {cart} = this.data;
+    const index = cart.findIndex(el=>el.goods_id == id)
+    if(cart[index].num == 1 && operation == -1){
+      let res =await showModal({content:'您是否要删除?'})
+      if(res.confirm){
+        cart.splice(index, 1)
+        this.setCart(cart)
+      }
+    }else{
+      cart[index].num += operation;
+      this.setCart(cart)
+    }
+    
+    
+  },
   handleItemChange(e){
     let goods_id = e.currentTarget.dataset.id
     let {cart}=this.data;

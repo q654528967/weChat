@@ -12,10 +12,15 @@ export const request=(params)=>{
         fail: ()=>{},
         complete: ()=>{}
     });
+    let header = {...params.header};
+    if(params.url.includes("/my/")){
+        header.Authorization = wx.getStorageSync('token');
+    }
     const baseUrl = "https://api-hmugo-web.itheima.net/api/public/v1"
     return new Promise((resolve,reject)=>{
         wx.request({
             ...params,
+            header,
             url:baseUrl+params.url,
             success: (result)=>{
                 resolve(result.data.message)

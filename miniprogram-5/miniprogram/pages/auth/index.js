@@ -1,4 +1,6 @@
 // pages/auth/index.js
+import {request} from '../../request/index'
+import {login} from '../../utils/asyncWx'
 Page({
 
   /**
@@ -28,7 +30,22 @@ Page({
   onShow: function () {
 
   },
-
+  async handleGetUserInfo(e){
+    try {
+      let {encryptedData,rawData,iv,signature} = e.detail;
+      let {code} = await login()
+      let data = {code, encryptedData, rawData,iv,signature} 
+      //因为不是企业用户，所以得不到token,所以给出一个空对象
+      const {token={}} = await request({url:'/users/wxlogin',method:'POST',data}) || {};
+      wx.setStorageSync('token', token);
+      wx.navigateBack({
+        delta: 1
+      });
+    } catch (error) {
+      console.log(error)
+    }
+    
+  },
   /**
    * 生命周期函数--监听页面隐藏
    */
